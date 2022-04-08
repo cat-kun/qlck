@@ -1,65 +1,85 @@
 <template>
-  <el-main>
-    <el-row :span="24">
-      <el-col :span="24">
-        <el-card shadow="always">
-          <el-tabs v-model="activeName" class="demo-tabs">
-            <el-tab-pane label="查询cookie是否在线" name="first">
-              <el-form
-                ref="ruleFormRef"
-                :model="ruleForm"
-                :rules="rules"
-                :size="formSize"
-                label-width="120px"
-              >
-                <el-row class="demo-autocomplete">
-                  <el-col :span="24">
-                    <el-form-item label="昵称" prop="name">
-                      <el-input v-model="ruleForm.name" class="w-260" placeholder="输入京东昵称">
-                        <template #prefix>
-                          <el-icon class="el-input__icon">
-                            <search />
-                          </el-icon>
-                        </template>
-                      </el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row class="demo-autocomplete">
-                  <el-col :span="24">
-                    <span class="elabel">服务器</span>
-                  </el-col>
-                </el-row>
-                <el-row class="demo-autocomplete">
-                  <el-col :span="24">
-                    <el-select v-model="serverValue" class="m-2" placeholder="Select" size="large">
-                      <el-option
-                        v-for="item in server"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-button type="primary" @click="submitForm(ruleFormRef)">查询</el-button>
-                  </el-col>
-                </el-row>
-              </el-form>
-            </el-tab-pane>
-            <el-tab-pane label="填写cookie登录" name="second" disabled>
-              <el-input v-model="input" placeholder @blur="changeInput" />
-              <div v-if="list.length">
-                <el-button type="primary" v-for="(item, index) in list" :key="index">第{{item.id}}次</el-button>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
-      </el-col>
-    </el-row>
-  </el-main>
+  <el-container>
+    <el-header>
+      <div class="header">
+        <div class="header-wrapper">
+          <div
+            class="flex items-center"
+            style="text-align: left; font-size: 20px; line-height: 2;"
+          >
+            <img class="NolanLog log" src="../src/assets/logo.png" alt="logo" />
+            <span style="margin-left: 1px; font-size: 35px;">恭喜發財</span>
+          </div>
+        </div>
+      </div>
+    </el-header>
+    <el-main>
+      <el-row :span="24">
+        <el-col :span="24">
+          <el-card shadow="always">
+            <el-tabs v-model="activeName" class="demo-tabs">
+              <el-tab-pane label="查询cookie是否在线" name="first">
+                <el-form
+                  ref="ruleFormRef"
+                  :model="ruleForm"
+                  :rules="rules"
+                  :size="formSize"
+                  label-width="120px"
+                >
+                  <el-row class="demo-autocomplete">
+                    <el-col :span="24">
+                      <el-form-item label="京东昵称" prop="name">
+                        <el-input v-model="ruleForm.name" class="" placeholder="输入京东昵称">
+                          <template #prefix>
+                            <el-icon class="el-input__icon">
+                              <search />
+                            </el-icon>
+                          </template>
+                        </el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row class="demo-autocomplete">
+                    <el-col :span="24">
+                      <span class="elabel">服务器</span>
+                    </el-col>
+                  </el-row>
+                  <el-row class="demo-autocomplete">
+                    <el-col :span="24">
+                      <el-select
+                        v-model="serverValue"
+                        class="m-2"
+                        placeholder="Select"
+                        size="large"
+                      >
+                        <el-option
+                          v-for="item in server"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
+                        />
+                      </el-select>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="24">
+                      <el-button type="primary" @click="submitForm(ruleFormRef)">查询</el-button>
+                    </el-col>
+                  </el-row>
+                </el-form>
+              </el-tab-pane>
+              <el-tab-pane label="填写cookie登录" name="second" disabled>
+                <el-input v-model="input" placeholder @blur="changeInput" />
+                <div v-if="list.length">
+                  <el-button type="primary" v-for="(item, index) in list" :key="index">第{{item.id}}次</el-button>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-main>
+  </el-container>
 </template>
 
 <script setup>
@@ -68,7 +88,7 @@ import { reactive, ref, getCurrentInstance } from 'vue'
 import { getToken, searchUser } from '@/api/index'
 import { ElMessage, ElMessageBox } from 'element-plus'
 // import { FormInstance } from 'element-plus'
-const { proxy } = getCurrentInstance(); 
+const { proxy } = getCurrentInstance();
 const formSize = ref('default')
 const ruleFormRef = ref()
 const activeName = ref('first')
@@ -192,6 +212,10 @@ const changeInput = () => {
 </script>
 
 <style>
+* {
+  margin: 0;
+  padding: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -208,5 +232,40 @@ const changeInput = () => {
 
 .huanhang {
   word-wrap: break-word;
+}
+
+.NolanLog {
+  -webkit-animation: appear 1s;
+  animation: appear 1s;
+}
+
+@-webkit-keyframes appear {
+  0% {
+    opacity: 0;
+  }
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+}
+
+.log {
+  margin-left: 30px;
+  width: 37px;
+  height: 37px;
+  /* border-radius: 50%; */
+}
+
+.header {
+  box-shadow: var(--el-box-shadow-light);
+  margin-bottom: 20px;
+}
+.flex {
+  display: flex;
+}
+.items-center {
+  align-items: center;
 }
 </style>
