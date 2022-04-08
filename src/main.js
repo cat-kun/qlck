@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as Icons from '@element-plus/icons'
+import * as dayjs from 'dayjs'
 import App from './App.vue'
 
 const app = createApp(App)
@@ -13,3 +14,4 @@ Object.keys(Icons).forEach(key => {
 
 app.use(ElementPlus)
 app.mount('#app')
+app.config.globalProperties.dayjs = dayjs // 全局挂载dayjs

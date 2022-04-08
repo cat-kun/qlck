@@ -49,7 +49,12 @@
                 </el-row>
               </el-form>
             </el-tab-pane>
-            <el-tab-pane label="填写cookie登录" name="second" disabled>Config</el-tab-pane>
+            <el-tab-pane label="填写cookie登录" name="second" disabled>
+              <el-input v-model="input" placeholder @blur="changeInput" />
+              <div v-if="list.length">
+                <el-button type="primary" v-for="(item, index) in list" :key="index">第{{item.id}}次</el-button>
+              </div>
+            </el-tab-pane>
           </el-tabs>
         </el-card>
       </el-col>
@@ -59,13 +64,15 @@
 
 <script setup>
 
-import { reactive, ref } from 'vue'
-import { getToken, search } from '@/api/index'
+import { reactive, ref, getCurrentInstance } from 'vue'
+import { getToken, searchUser } from '@/api/index'
+import { ElMessage, ElMessageBox } from 'element-plus'
 // import { FormInstance } from 'element-plus'
-
+const { proxy } = getCurrentInstance(); 
 const formSize = ref('default')
 const ruleFormRef = ref()
 const activeName = ref('first')
+const input = ref('')
 const server = reactive([
   {
     value: 1,
@@ -74,6 +81,7 @@ const server = reactive([
 ])
 const serverValue = ref(server[0].label)
 
+let list = reactive([])
 
 const ruleForm = reactive({
   name: '',
@@ -86,17 +94,50 @@ const rules = reactive({
 })
 
 const expiration = localStorage.getItem('expiration')
+const dayjs = proxy.dayjs
 
 const submitForm = async (formEl) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
-      search({
-        searchValue: ruleForm.name,
+      // console.log('submit!')
+      const searchValue = ruleForm.name;
+      searchUser({
+        searchValue,
         t: expiration
       }).then(res => {
-        console.log(2, res)
+        // console.log(2, res)
+        if (res.length) {
+          let result = res[0].value.split('pt_pin=')[1];
+          result = result.substring(0, result.length - 1)
+          if (searchValue === result) {
+            console.log('匹配上了')
+            // ElMessageBox.alert('This is a message', 'Title', {
+            //   confirmButtonText: 'OK',
+            // })
+            const time = `${dayjs(res[0].timestamp).format('YYYY/MM/DD HH:mm:ss')}`
+
+            ElMessageBox.alert(
+              `<div>
+                <p class="huanhang">青龙备注：${res[0].remarks}</p>
+                <p>登录时间：${time}</p>
+                <p>到期时间：30天后</p>
+                <p>登录地址：<a href="http://106.53.246.91:5701/">JD登录</a></p>
+              </div>`,
+              '查询结果',
+              {
+                dangerouslyUseHTMLString: true,
+              }
+            )
+          } else {
+            ElMessage('查询不到此昵称')
+          }
+          // console.log(result)
+        } else {
+          ElMessage('查询不到此昵称')
+        }
+
+
       })
     } else {
       console.log('error submit!', fields)
@@ -117,6 +158,7 @@ const fetchToken = () => {
     console.log('1', res)
     // 存储过期时间，过期了才重新请求接口
     localStorage.setItem('expiration', res.expiration * 1000)
+    localStorage.setItem('Authorization', `${res.token_type} ${res.token}`)
   });
 }
 
@@ -124,6 +166,29 @@ if (!expiration || expiration < getSystemTime()) {
   fetchToken()
 }
 
+const changeInput = () => {
+  const inputValue = input.value * 1; // 输入框的值 乘1 是为了转数字
+  const listLength = list.length; // 按钮数组长度
+  const diff = inputValue - listLength; // 差值
+
+  // 判断处理
+  if (inputValue > listLength) {
+    // 按钮变多了
+    console.log('按钮变多了', diff);
+    for (let i = listLength; i < (diff + listLength); i++) {
+      list.push({
+        id: i + 1, // i 默认是0
+        isShow: true,
+      })
+    }
+  } else {
+    // 按钮变少了
+    console.log('按钮变少了', Math.abs(diff))
+    list.splice(-Math.abs(diff), Math.abs(diff))
+  }
+
+  console.log('list', list)
+}
 </script>
 
 <style>
@@ -139,5 +204,9 @@ if (!expiration || expiration < getSystemTime()) {
 }
 .w-260 {
   max-width: 260px;
+}
+
+.huanhang {
+  word-wrap: break-word;
 }
 </style>

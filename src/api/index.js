@@ -6,7 +6,7 @@ export const getToken = params => http({
   params,
 });
 
-export const search = params => http({
+export const searchUser = params => http({
   url: '/open/envs',
   method: 'get',
   params,

@@ -1,6 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
 import { ElMessage } from 'element-plus';
-import { BASE_URL } from "./config";
+import { BASE_URL } from './config';
+import { getToken } from './auth'
 
 const http = axios.create({
   baseURL: BASE_URL,
@@ -8,7 +9,11 @@ const http = axios.create({
 })
 // 数据请求拦截
 http.interceptors.request.use((config) => {
-  // config.headers = 
+  Object.assign({
+    'Content-Type': 'application/json',
+  }, config.headers);
+  const token = getToken();
+  token && (config.headers['Authorization'] = token);
   return config;
 }, (error) => {
   return Promise.reject(error);
@@ -16,20 +21,14 @@ http.interceptors.request.use((config) => {
 
 // 返回响应数据拦截
 http.interceptors.response.use((res) => {
-  console.log('响应数据拦截', res)
+  console.log('成功响应数据拦截', res)
   const {data: {data}, status} = res;
   // 状态码为 2xx 范围时都会调用该函数，处理响应数据
   if (status === 200) {
     return Promise.resolve(data);
-  } else {
-    // ElMessage({
-    //   type: 'error',
-    //   message: error.response.message,
-    //   showClose: true
-    // })
   }
 }, (error) => {
-  console.log('error', error)
+  console.log('失败响应数据拦截', error)
   if (error.response.status) {
     // 状态码超过 2xx 范围时都会调用该函数，处理错误响应
     ElMessage({
